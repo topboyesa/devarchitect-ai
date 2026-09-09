@@ -1,12 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
 from agents.orchestrator_agent import OrchestratorAgent
+from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI(title="DevArchitect AI - Orchestrator")
 
-app = FastAPI(
-    title="DevArchitect AI - Orchestrator",
-    description="Coordinates multiple AI software engineering agents"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -26,8 +33,6 @@ def home():
 
 
 @app.post("/analyze")
-async def analyze_project(request: ProjectRequest):
-
-    result = await agent.analyze(request.idea)
-
+def analyze_project(request: ProjectRequest):
+    result = agent.analyze(request.idea)
     return result
